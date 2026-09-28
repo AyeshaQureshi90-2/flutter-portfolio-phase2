@@ -20,6 +20,8 @@ The gal package was used to save the generated portfolio image to the device Gal
 The share_plus package was used to share the generated portfolio image through the device's available sharing applications.
 3.shared_preferences
 The shared_preferences package was used to store the user's portfolio information locally. It stores information such as personal details, skills and contact information so that the data can remain available after closing and reopening the application.
+4.flutter_launcher_icons
+The flutter_launcher_icons package was used to generate the custom Android launcher icon and replace the default Flutter launcher icon.
 4. Application Flow
 The application follows this flow:
 Splash Screen → Home → Portfolio Builder → About / Skills / Contact → Portfolio Preview
@@ -108,7 +110,17 @@ Solution
 The required Flutter rendering import was added:
 import 'package:flutter/rendering.dart';
 The button structure and brackets were also checked and corrected when syntax errors appeared.
-7. What I Learned
+7. App Icon
+A professional generic app icon was added to the Portfolio Builder App to improve its appearance and provide a recognizable launcher icon.
+1.Implementation
+Added a 512 × 512 px PNG icon to the assets folder.
+Used the flutter_launcher_icons package to generate the Android launcher icon.
+Successfully generated the launcher icons.
+Rebuilt the release APK after adding the new icon.
+2.Package Used
+flutter_launcher_icons: ^0.14.4
+The final release APK includes the custom application icon.
+8. What I Learned
 During Phase 2, I learned how to build a more complete Flutter application and connect multiple screens together.
 I learned how to:
 •	Organize a Flutter project into separate files and folders.
