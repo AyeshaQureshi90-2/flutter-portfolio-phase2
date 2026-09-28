@@ -2,11 +2,47 @@ import 'package:flutter/material.dart';
 import '../portfolio_data.dart';
 import 'portfolio_builder_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final PortfolioData portfolioData = PortfolioData();
+
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadPortfolioData();
+  }
+
+  Future<void> loadPortfolioData() async {
+    await portfolioData.loadData();
+
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        backgroundColor: Color(0xFFF7F5FB),
+        body: Center(
+          child: CircularProgressIndicator(
+            color: Color(0xFF6750A4),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFF7F5FB),
 
@@ -98,7 +134,9 @@ class HomeScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                         PortfolioBuilderScreen(data: PortfolioData()),
+                          PortfolioBuilderScreen(
+                        data: portfolioData,
+                      ),
                     ),
                   );
                 },
@@ -108,8 +146,7 @@ class HomeScreen extends StatelessWidget {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
-              
-                ),
+                  ),
                 ),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,

@@ -16,26 +16,234 @@ class SkillsScreen extends StatefulWidget {
 class _SkillsScreenState extends State<SkillsScreen> {
   final TextEditingController skillController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-  }
+  // Professional skill suggestions
+  final List<String> skillSuggestions = [
+    // Programming
+    'Programming',
+    'C',
+    'C++',
+    'C#',
+    'Java',
+    'Python',
+    'Dart',
+    'Kotlin',
+    'Swift',
+    'PHP',
+    'Ruby',
+    'Go',
+    'Rust',
 
-  void addSkill() {
+    // Mobile Development
+    'Flutter',
+    'Flutter Development',
+    'Android Development',
+    'iOS Development',
+    'Mobile App Development',
+    'React Native',
+    'Kotlin Android Development',
+
+    // Web Development
+    'Web Development',
+    'Frontend Development',
+    'Backend Development',
+    'Full Stack Development',
+    'HTML',
+    'CSS',
+    'JavaScript',
+    'TypeScript',
+    'React',
+    'Next.js',
+    'Angular',
+    'Vue.js',
+    'Node.js',
+    'Express.js',
+    'Django',
+    'Laravel',
+    'WordPress',
+
+    // UI/UX Design
+    'UI Design',
+    'UX Design',
+    'UI/UX Design',
+    'Figma',
+    'Adobe XD',
+    'Wireframing',
+    'Prototyping',
+    'Design Thinking',
+
+    // Graphic Designing
+    'Graphic Design',
+    'Graphic Designing',
+    'Adobe Photoshop',
+    'Adobe Illustrator',
+    'Adobe InDesign',
+    'Logo Design',
+    'Brand Identity Design',
+    'Poster Design',
+    'Banner Design',
+    'Social Media Design',
+    'Print Design',
+    'Typography',
+    'Photo Editing',
+    'Canva',
+
+    // Video Editing & Animation
+    'Video Editing',
+    'Video Production',
+    'Video Making',
+    'Motion Graphics',
+    'Animation',
+    '2D Animation',
+    '3D Animation',
+    'Adobe Premiere Pro',
+    'Adobe After Effects',
+    'DaVinci Resolve',
+    'CapCut',
+    'Filmora',
+    'Final Cut Pro',
+    'Blender',
+
+    // Database
+    'Database Management',
+    'SQL',
+    'MySQL',
+    'PostgreSQL',
+    'SQLite',
+    'MongoDB',
+    'Firebase',
+    'Database Design',
+
+    // Cloud & API
+    'Cloud Computing',
+    'AWS',
+    'Microsoft Azure',
+    'Google Cloud',
+    'REST API',
+    'API Development',
+    'API Integration',
+
+    // AI & Data
+    'Artificial Intelligence',
+    'Machine Learning',
+    'Deep Learning',
+    'Data Science',
+    'Data Analysis',
+    'Natural Language Processing',
+    'Computer Vision',
+    'Generative AI',
+    'Prompt Engineering',
+
+    // Cyber Security
+    'Cyber Security',
+    'Network Security',
+    'Ethical Hacking',
+    'Information Security',
+    'Cryptography',
+
+    // Networking
+    'Computer Networking',
+    'Network Administration',
+    'TCP/IP',
+    'LAN/WAN',
+    'Cisco Networking',
+
+    // Software & Tools
+    'Git',
+    'GitHub',
+    'GitLab',
+    'Version Control',
+    'Visual Studio Code',
+    'Android Studio',
+    'Jira',
+    'Trello',
+
+    // Microsoft Office
+    'Microsoft Word',
+    'Microsoft Excel',
+    'Microsoft PowerPoint',
+    'Microsoft Access',
+    'Data Entry',
+    'Microsoft Office',
+
+    // Digital Marketing
+    'Digital Marketing',
+    'Social Media Marketing',
+    'Search Engine Optimization',
+    'SEO',
+    'Search Engine Marketing',
+    'Email Marketing',
+    'Content Marketing',
+    'Affiliate Marketing',
+    'Google Ads',
+    'Social Media Management',
+
+    // Content Creation
+    'Content Creation',
+    'Content Writing',
+    'Copywriting',
+    'Blog Writing',
+    'Creative Writing',
+    'Technical Writing',
+    'Script Writing',
+    'Proofreading',
+
+    // Photography
+    'Photography',
+    'Product Photography',
+    'Portrait Photography',
+    'Photo Retouching',
+    'Lightroom',
+    'Adobe Lightroom',
+
+    // Professional Skills
+    'Project Management',
+    'Team Management',
+    'Communication Skills',
+    'Leadership',
+    'Problem Solving',
+    'Time Management',
+    'Customer Service',
+    'Research',
+    'Presentation Skills',
+  ];
+
+  // Add skill and save it
+  Future<void> addSkill() async {
     String skill = skillController.text.trim();
 
     if (skill.isNotEmpty) {
-      setState(() {
-        widget.data.skills.add(skill);
-        skillController.clear();
-      });
+      // Same skill dobara add na ho
+      bool alreadyExists = widget.data.skills.any(
+        (existingSkill) =>
+            existingSkill.toLowerCase() == skill.toLowerCase(),
+      );
+
+      if (!alreadyExists) {
+        setState(() {
+          widget.data.skills.add(skill);
+          skillController.clear();
+        });
+
+        // Skill ko phone mein save karna
+        await widget.data.saveData();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('This skill has already been added.'),
+          ),
+        );
+      }
     }
   }
 
-  void removeSkill(int index) {
+  // Remove skill and save updated list
+  Future<void> removeSkill(int index) async {
     setState(() {
       widget.data.skills.removeAt(index);
     });
+
+    // Updated skills ko phone mein save karna
+    await widget.data.saveData();
   }
 
   @override
@@ -74,8 +282,6 @@ class _SkillsScreenState extends State<SkillsScreen> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(22, 15, 22, 30),
         children: [
-
-          // Heading
           const Text(
             'Showcase your skills.',
             style: TextStyle(
@@ -99,41 +305,170 @@ class _SkillsScreenState extends State<SkillsScreen> {
 
           const SizedBox(height: 30),
 
-          // Skill Input
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(17),
-            ),
-            child: TextField(
-              controller: skillController,
-              decoration: InputDecoration(
-                labelText: 'Skill',
-                hintText: 'e.g. Flutter',
-                prefixIcon: const Icon(
-                  Icons.code_rounded,
-                  color: Color(0xFF6750A4),
+          // Professional Autocomplete
+          Autocomplete<String>(
+            optionsBuilder: (TextEditingValue textEditingValue) {
+              String query =
+                  textEditingValue.text.trim().toLowerCase();
+
+              if (query.isEmpty) {
+                return const Iterable<String>.empty();
+              }
+
+              return skillSuggestions.where(
+                (skill) =>
+                    skill.toLowerCase().contains(query),
+              );
+            },
+
+            onSelected: (String selection) {
+              skillController.text = selection;
+
+              skillController.selection =
+                  TextSelection.fromPosition(
+                TextPosition(
+                  offset: skillController.text.length,
                 ),
-                suffixIcon: IconButton(
-                  onPressed: addSkill,
-                  icon: const Icon(
-                    Icons.add_circle_rounded,
-                    color: Color(0xFF6750A4),
-                    size: 28,
+              );
+            },
+
+            optionsViewBuilder: (
+              BuildContext context,
+              AutocompleteOnSelected<String> onSelected,
+              Iterable<String> options,
+            ) {
+              return Align(
+                alignment: Alignment.topLeft,
+                child: Material(
+                  elevation: 4,
+                  borderRadius: BorderRadius.circular(15),
+                  color: Colors.white,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width - 44,
+                    constraints: const BoxConstraints(
+                      maxHeight: 250,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                      ),
+                      shrinkWrap: true,
+                      itemCount: options.length,
+                      itemBuilder: (
+                        BuildContext context,
+                        int index,
+                      ) {
+                        final String option =
+                            options.elementAt(index);
+
+                        return InkWell(
+                          onTap: () {
+                            onSelected(option);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 13,
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.auto_awesome_rounded,
+                                  color: Color(0xFF6750A4),
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    option,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF25232A),
+                                    ),
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  size: 14,
+                                  color: Color(0xFF9B96A3),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
-                border: OutlineInputBorder(
+              );
+            },
+
+            fieldViewBuilder: (
+              BuildContext context,
+              TextEditingController controller,
+              FocusNode focusNode,
+              VoidCallback onFieldSubmitted,
+            ) {
+              // Autocomplete controller ko hamare controller
+              // ke sath connect karna
+              if (controller.text != skillController.text) {
+                controller.value = skillController.value;
+              }
+
+              controller.addListener(() {
+                if (skillController.text != controller.text) {
+                  skillController.value = controller.value;
+                }
+              });
+
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(17),
-                  borderSide: BorderSide.none,
                 ),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 18,
-                  vertical: 17,
+                child: TextField(
+                  controller: controller,
+                  focusNode: focusNode,
+                  onSubmitted: (_) {
+                    onFieldSubmitted();
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Skill',
+                    hintText: 'e.g. Flutter, Graphic Design',
+                    prefixIcon: const Icon(
+                      Icons.code_rounded,
+                      color: Color(0xFF6750A4),
+                    ),
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        addSkill();
+                      },
+                      icon: const Icon(
+                        Icons.add_circle_rounded,
+                        color: Color(0xFF6750A4),
+                        size: 28,
+                      ),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(17),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding:
+                        const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 17,
+                    ),
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
 
           const SizedBox(height: 12),
@@ -143,7 +478,9 @@ class _SkillsScreenState extends State<SkillsScreen> {
             width: double.infinity,
             height: 52,
             child: ElevatedButton(
-              onPressed: addSkill,
+              onPressed: () {
+                addSkill();
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF6750A4),
                 foregroundColor: Colors.white,
@@ -174,7 +511,6 @@ class _SkillsScreenState extends State<SkillsScreen> {
 
           const SizedBox(height: 35),
 
-          // Skills Heading
           const Text(
             'Your Skills',
             style: TextStyle(
@@ -186,7 +522,6 @@ class _SkillsScreenState extends State<SkillsScreen> {
 
           const SizedBox(height: 15),
 
-          // Skills Grid
           if (widget.data.skills.isEmpty)
             Container(
               width: double.infinity,
@@ -223,8 +558,6 @@ class _SkillsScreenState extends State<SkillsScreen> {
                 crossAxisCount: 2,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
-
-                // Card ki height barha di
                 childAspectRatio: 1.15,
               ),
               itemBuilder: (context, index) {

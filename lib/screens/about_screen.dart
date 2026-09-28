@@ -26,7 +26,7 @@ class _AboutScreenState extends State<AboutScreen> {
   void initState() {
     super.initState();
 
-    // Previously saved information ko wapas fields mein show karna
+    // Previously saved information ko fields mein show karna
     nameController.text = widget.data.name;
     professionController.text = widget.data.profession;
     aboutController.text = widget.data.about;
@@ -53,17 +53,27 @@ class _AboutScreenState extends State<AboutScreen> {
     super.dispose();
   }
 
-  void saveInformation() {
-    // Information shared PortfolioData mein save karna
+  // Save About Information
+  Future<void> saveInformation() async {
+    // PortfolioData mein information save karna
     widget.data.name = nameController.text.trim();
     widget.data.profession = professionController.text.trim();
     widget.data.about = aboutController.text.trim();
     widget.data.education = educationController.text.trim();
     widget.data.experience = experienceController.text.trim();
 
+    // Phone ki local storage mein save karna
+    await widget.data.saveData();
+
     setState(() {
       informationSaved = true;
     });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Your information has been saved.'),
+      ),
+    );
   }
 
   @override

@@ -14,10 +14,12 @@ Designed portfolio preview
 Save portfolio as an image
 Share portfolio image
 3. Packages Used
-gal
+1.gal
 The gal package was used to save the generated portfolio image to the device Gallery.
-share_plus
+2.share_plus
 The share_plus package was used to share the generated portfolio image through the device's available sharing applications.
+3.shared_preferences
+The shared_preferences package was used to store the user's portfolio information locally. It stores information such as personal details, skills and contact information so that the data can remain available after closing and reopening the application.
 4. Application Flow
 The application follows this flow:
 Splash Screen → Home → Portfolio Builder → About / Skills / Contact → Portfolio Preview
@@ -88,7 +90,19 @@ Problem 5: Sharing the Portfolio
 The portfolio image also needed to be shared with other applications.
 Solution
 The share_plus package was added to the project. The generated portfolio image is passed to the device's sharing system.
-Problem 6: Code Errors During Development
+Problem 6: Input Validation
+Users could enter invalid information in fields such as email and phone number.
+Solution
+Validation was added to the Contact section. The phone field was restricted to numeric input, and email validation was added to check the entered email format.
+Problem 7: Providing Useful Skill Suggestions
+Users may not always know which skills to enter or may want commonly used professional skills.
+Solution
+An autocomplete suggestion system was added to the Skills section. Professional and technical skills are suggested while the user types, while custom skills can still be entered manually.
+Problem 8: Maintaining Data After Closing the App
+Previously, information could be lost when the application was closed because the data was only maintained during the current application session.
+Solution
+The shared_preferences package was added for local data persistence. Portfolio information is saved locally and loaded again when the application starts.
+Problem 9: Code Errors During Development
 Some syntax and import errors appeared during development, including an issue related to RenderRepaintBoundary.
 Solution
 The required Flutter rendering import was added:
@@ -101,7 +115,13 @@ I learned how to:
 •	Create reusable classes for storing application data.
 •	Pass data between screens.
 •	Work with user input.
+•	Validate email and phone number input.
+•	Create professional autocomplete suggestions.
 •	Manage lists of user-entered skills.
+•	Prevent duplicate skills.
+•	Store application data locally using shared_preferences.
+•	Load previously saved information when the application starts.
+•	Use async and await for local data operations.
 •	Navigate between multiple screens.
 •	Use assets in a Flutter project.
 •	Configure assets through pubspec.yaml.

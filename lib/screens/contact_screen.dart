@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../portfolio_data.dart';
 
 class ContactScreen extends StatefulWidget {
@@ -22,11 +23,44 @@ class _ContactScreenState extends State<ContactScreen> {
 
   bool contactSaved = false;
 
+  // Email validation
+  String? validateEmail(String value) {
+    if (value.trim().isEmpty) {
+      return 'Please enter your email';
+    }
+
+    final emailPattern = RegExp(
+      r'^[\w\.-]+@[\w\.-]+\.\w+$',
+    );
+
+    if (!emailPattern.hasMatch(value.trim())) {
+      return 'Please enter a valid email address';
+    }
+
+    return null;
+  }
+
+  // Phone validation
+  String? validatePhone(String value) {
+    if (value.trim().isEmpty) {
+      return 'Please enter your phone number';
+    }
+
+    // Sirf numbers allow
+    final phonePattern = RegExp(r'^[0-9]+$');
+
+    if (!phonePattern.hasMatch(value.trim())) {
+      return 'Phone number must contain numbers only';
+    }
+
+    return null;
+  }
+
   @override
   void initState() {
     super.initState();
 
-    // Previously saved contact information ko fields mein show karna
+    // Previously saved contact information fields mein show karna
     emailController.text = widget.data.email;
     phoneController.text = widget.data.phone;
     locationController.text = widget.data.location;
@@ -53,7 +87,18 @@ class _ContactScreenState extends State<ContactScreen> {
     super.dispose();
   }
 
-  void saveContact() {
+  // Save Contact Information
+  Future<void> saveContact() async {
+    // Pehle email aur phone validate karna
+    final emailError = validateEmail(emailController.text);
+    final phoneError = validatePhone(phoneController.text);
+
+    // Agar validation fail ho to save nahi karna
+    if (emailError != null || phoneError != null) {
+      setState(() {});
+      return;
+    }
+
     // Contact information shared PortfolioData mein save karna
     widget.data.email = emailController.text.trim();
     widget.data.phone = phoneController.text.trim();
@@ -61,9 +106,18 @@ class _ContactScreenState extends State<ContactScreen> {
     widget.data.linkedin = linkedinController.text.trim();
     widget.data.github = githubController.text.trim();
 
+    // Contact information ko phone mein save karna
+    await widget.data.saveData();
+
     setState(() {
       contactSaved = true;
     });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Contact information saved successfully!'),
+      ),
+    );
   }
 
   @override
@@ -74,7 +128,6 @@ class _ContactScreenState extends State<ContactScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFFF7F5FB),
         elevation: 0,
-
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
@@ -84,7 +137,6 @@ class _ContactScreenState extends State<ContactScreen> {
             color: Color(0xFF25232A),
           ),
         ),
-
         title: const Text(
           'Contact Me',
           style: TextStyle(
@@ -98,7 +150,6 @@ class _ContactScreenState extends State<ContactScreen> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(22, 15, 22, 30),
         children: [
-          // Heading
           const Text(
             'Let people reach you.',
             style: TextStyle(
@@ -128,6 +179,7 @@ class _ContactScreenState extends State<ContactScreen> {
             label: 'Email',
             hint: 'example@email.com',
             icon: Icons.email_outlined,
+            keyboardType: TextInputType.emailAddress,
           ),
 
           const SizedBox(height: 16),
@@ -136,8 +188,12 @@ class _ContactScreenState extends State<ContactScreen> {
           _buildTextField(
             controller: phoneController,
             label: 'Phone',
-            hint: '+92 300 1234567',
+            hint: '03001234567',
             icon: Icons.phone_outlined,
+            keyboardType: TextInputType.phone,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+            ],
           ),
 
           const SizedBox(height: 16),
@@ -177,7 +233,9 @@ class _ContactScreenState extends State<ContactScreen> {
             width: double.infinity,
             height: 55,
             child: ElevatedButton(
-              onPressed: saveContact,
+              onPressed: () {
+                saveContact();
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF6750A4),
                 foregroundColor: Colors.white,
@@ -323,14 +381,30 @@ class _ContactScreenState extends State<ContactScreen> {
     required String label,
     required String hint,
     required IconData icon,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
   }) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(17),
       ),
-      child: TextField(
+      child: TextFormField(
         controller: controller,
+        keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        validator: (value) {
+          if (label == 'Email') {
+            return validateEmail(value ?? '');
+          }
+
+          if (label == 'Phone') {
+            return validatePhone(value ?? '');
+          }
+
+          return null;
+        },
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,
